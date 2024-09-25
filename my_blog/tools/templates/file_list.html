@@ -1,0 +1,144 @@
+{% extends "index.html" %}
+{% load my_filters_and_tags %}
+
+{% block center %}
+    <h3>工具文件列表</h3>
+    {% if user.is_authenticated %}
+        <p> <a href="{% url 'tools:model_form_upload' %}">文件上传</a>
+    {% endif %}
+
+{#    <a href="{% url 'tools:file_upload' %}">RegularFormUpload</a>  | <a href="{% url 'tools:upload3' %}">AjaxUpload</a>#}</p>
+    {% if files %}
+        <!-- 新增，搜索栏 -->
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <form class="form-inline">
+                    <label class="sr-only">content</label>
+                    <label>
+                        <input type="text"
+                               class="form-control mb-2 mr-sm-2"
+                               name="search"
+                               placeholder="搜索工具..."
+                               required
+                        >
+                    </label>
+                </form>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>文件名</td>
+                <td>文件大小</td>
+                <td>文件描述</td>
+				<td>操作</td>
+            </tr>
+            {% for file in files %}
+                <tr>
+                    <td>{{ file.file.url | baseName }}</td>
+                    <td>{{ file.file.size | filesizeformat }}</td>
+                    {% if file.desc %}
+                        <td style="width: 500px;">{{ file.desc }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>
+						<a target="_blank" href="{% url 'tools:download_file' file.id %}">下载附件</a>&nbsp;&nbsp;&nbsp;
+                        {% if user.is_authenticated and user.is_superuser %}
+						    <a href="javascript:void(0);" data_pk={{ file.id }} onclick="delete_file(this)">删除附件</a>
+                        {% endif %}
+                        <!-- 新增一个隐藏的表单 -->
+                        <form
+                                style="display:none;"
+                                id="safe_delete_{{ file.id }}"
+                                action="{% url 'tools:delete_file' file.id %}"
+                                method="POST"
+                        >
+                            {% csrf_token %}
+                            <button type="submit">发送</button>
+                        </form>
+					</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+		<!-- Modal -->
+		<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			 aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">确认删除</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						确认删除附件吗？
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" id="safe_delete_btn" class="btn btn-danger" onclick="confirm_safe_delete()">删除</button>
+					</div>
+				</div>
+			</div>
+		</div>
+        <!-- 页码导航 -->
+        <div class="pagination row">
+            <div class="m-auto">
+                <span class="step-links">
+                    <!-- 如果不是第一页，则显示上翻按钮 -->
+                    {% if files.has_previous %}
+                        <a href="?page=1&order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="btn btn-success">&laquo; 1</a>
+                        <span>...</span>
+                        <a href="?page={{ files.previous_page_number }}&order={{ order }}&search={{ search }}"
+                           class="btn btn-secondary">
+                            {{ files.previous_page_number }}
+                        </a>
+                    {% endif %}
+
+                    <!-- 当前页面 -->
+                    <span class="current btn btn-danger btn-lg">
+                        {{ files.number }}
+                    </span>
+
+                    <!-- 如果不是最末页，则显示下翻按钮 -->
+                    {% if files.has_next %}
+                        <a href="?page={{ files.next_page_number }}&order={{ order }}&search={{ search }}"
+                           class="btn btn-secondary">
+                            {{ files.next_page_number }}
+                        </a>
+                        <span>...</span>
+                        <a href="?page={{ files.paginator.num_pages }}&order={{ order }}&search={{ search }}"
+                           class="btn btn-success">
+                            {{ files.paginator.num_pages }} &raquo;
+                        </a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <p>No files uploaded yet.
+            {% if user.is_authenticated %}
+                Please click <a href="{% url 'tools:file_upload' %}">here</a>to upload file.
+            {% endif %}
+        </p>
+    {% endif %}
+
+{% endblock %}
+{% block script %}
+
+    <script type="text/javascript">
+       function confirm_safe_delete() {
+			let id =  $('#safe_delete_btn').attr("data_pk")
+            $('form#safe_delete_'+ id +' button').click()
+			$('#uploadModal').modal('hide')
+        }
+		function delete_file(that){
+			pk = that.attributes["data_pk"].nodeValue
+			$('#safe_delete_btn').attr("data_pk", pk);
+			$('#uploadModal').modal('show')
+		}
+    </script>
+{% endblock script %}

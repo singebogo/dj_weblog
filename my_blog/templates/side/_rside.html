@@ -1,0 +1,47 @@
+<div class="card" style="margin-bottom: 10px">
+    <div class="card-header">关于</div>
+    <div class="card-body">
+        <p>这是我的笔记大全，它是使用Django开发的</p>
+		<p style="color: red;">Author: kxw(oldkangme@163.com)</p>
+    </div>
+</div>
+<div class="card" style="margin-bottom: 10px">
+    <div class="card-header">文章分类</div>
+    <div class="card-body">
+        {% if categories %}
+            <ul class="list-unstyled">
+                {% for c in categories %}
+                    <li>
+                        <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                           href="{% url 'article:article_list' %}?page=1&order={{ order }}&search={{ search }}&column={{ c.id }}&tag={{ tag }}" >- {{ c.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+{% if user.is_authenticated and user.is_superuser %}
+    <div class="card" style="margin-bottom: 10px">
+        <div class="card-header">管理员登录入口</div>
+        <div class="card-body">
+            <p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'admin:index' %}" target="_blank" >进入后台管理</a><br/>
+                    <a href="{% url 'admin:logout' %}" target="_blank" >退出系统</a><br/>
+                {% else %}
+                    <a href="{% url 'admin:login' %}" target="_blank" >登录后台管理</a><br/>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% else %}
+    <div class="card" style="margin-bottom: 10px">
+        <div class="card-header">管理员登录入口</div>
+        <div class="card-body">
+            <p>
+                <a href="{% url 'admin:login' %}" target="_blank" >登录后台管理</a><br/>
+            </p>
+        </div>
+    </div>
+{% endif %}

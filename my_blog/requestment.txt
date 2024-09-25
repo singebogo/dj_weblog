@@ -1,0 +1,11 @@
+PyMySQL
+django
+django-password-reset
+django-taggit
+django-ckeditor
+django-mptt
+django-notifications-hq
+django-allauth
+pillow
+requests
+markdown

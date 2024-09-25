@@ -1,0 +1,48 @@
+
+<div class="card" style="margin-bottom: 10px">
+    <div class="card-header">常用网站</div>
+    <div class="card-body">
+        {% if websites %}
+            <ul class="list-unstyled">
+                {% for c in websites %}
+                    <li>
+                        <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                           target="_blank" href="{{ c.url }}">- {{ c.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 10px">
+    <div class="card-header">最新文章</div>
+    <div class="card-body">
+        {% if categories %}
+            <ul class="list-unstyled">
+                {% for c in article_latest_list %}
+                    <li>
+                        <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                           href="{% url 'article:article_detail' c.id %}">- {{ c.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 10px">
+    <div class="card-header">最热文章</div>
+    <div class="card-body">
+        {% if categories %}
+            <ul class="list-unstyled">
+                {% for c in article_hot_list %}
+                    <li>
+                        <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                           href="{% url 'article:article_detail' c.id  %}" >- {{ c.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>

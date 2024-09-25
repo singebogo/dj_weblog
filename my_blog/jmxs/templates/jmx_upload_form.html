@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block center %}
+    {% if heading %}
+        <h3>{{ heading }}</h3>
+    {% endif %}
+	<form method="post" enctype="multipart/form-data" id="upload_form"  method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input class="btn btn-info form-control" type="submit" value="上传">
+	</form>
+{% endblock %}
